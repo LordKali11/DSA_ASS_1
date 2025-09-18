@@ -1,0 +1,132 @@
+syntax = "proto3";
+
+package car_rental;
+
+
+
+service CarRentalService {
+  // Admin operations
+  rpc AddCar(Car) returns (CarResponse) {}
+  rpc CreateUsers(stream User) returns (UserCreationResponse) {}
+  rpc UpdateCar(CarUpdateRequest) returns (CarResponse) {}
+  rpc RemoveCar(RemoveCarRequest) returns (CarList) {}
+  
+  // Customer operations
+  rpc ListAvailableCars(FilterRequest) returns (stream Car) {}
+  rpc SearchCar(SearchRequest) returns (CarResponse) {}
+  rpc AddToCart(CartItem) returns (CartResponse) {}
+  rpc PlaceReservation(ReservationRequest) returns (ReservationResponse) {}
+  
+  // Common operations
+  rpc ListAllReservations(Empty) returns (stream Reservation) {}
+}
+
+// Data types
+message Empty {}
+
+message Car {
+  string plate_number = 1;
+  string make = 2;
+  string model = 3;
+  int32 year = 4;
+  double daily_price = 5;
+  double mileage = 6;
+  CarStatus status = 7;
+}
+
+message User {
+  string user_id = 1;
+  string name = 2;
+  string email = 3;
+  UserRole role = 4;
+}
+
+message CartItem {
+  string user_id = 1;
+  string plate_number = 2;
+  string start_date = 3; // ISO format: YYYY-MM-DD
+  string end_date = 4;
+}
+
+message Reservation {
+  string reservation_id = 1;
+  string user_id = 2;
+  repeated CartItem items = 3;
+  double total_price = 4;
+  ReservationStatus status = 5;
+  string created_at = 6;
+}
+
+// Request/Response messages
+message CarResponse {
+  bool success = 1;
+  string message = 2;
+  Car car = 3;
+}
+
+message UserCreationResponse {
+  bool success = 1;
+  string message = 2;
+  int32 users_created = 3;
+}
+
+message CarUpdateRequest {
+  string plate_number = 1;
+  optional double daily_price = 2;
+  optional CarStatus status = 3;
+  optional double mileage = 4;
+}
+
+message RemoveCarRequest {
+  string plate_number = 1;
+}
+
+message CarList {
+  repeated Car cars = 1;
+}
+
+message FilterRequest {
+  optional string make = 1;
+  optional int32 year = 2;
+  optional string model = 3;
+}
+
+message SearchRequest {
+  string plate_number = 1;
+}
+
+message CartResponse {
+  bool success = 1;
+  string message = 2;
+  repeated CartItem items = 3;
+}
+
+message ReservationRequest {
+  string user_id = 1;
+}
+
+message ReservationResponse {
+  bool success = 1;
+  string message = 2;
+  Reservation reservation = 3;
+}
+
+// Enums
+enum CarStatus {
+  AVAILABLE = 0;
+  UNAVAILABLE = 1;
+  MAINTENANCE = 2;
+  RENTED = 3;
+}
+
+enum UserRole {
+  CUSTOMER = 0;
+  ADMIN = 1;
+}
+
+enum ReservationStatus {
+  PENDING = 0;
+  CONFIRMED = 1;
+  CANCELLED = 2;
+  COMPLETED = 3;
+}
