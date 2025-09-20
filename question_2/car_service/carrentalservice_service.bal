@@ -7,8 +7,6 @@ table<CartItem> key(user_id) cart_table = table[];
 table<User> key(user_id) users_table = table[];
 table<Reservation> key(reservation_id) reservations_table = table[];
 
-
-
 @grpc:Descriptor {value: CAR_RENTAL_DESC}
 service "CarRentalService" on ep {
 
